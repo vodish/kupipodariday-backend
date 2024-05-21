@@ -9,13 +9,13 @@ export class AuthController {
 
   @Post('/signin')
   signin(@Body() data: SigninUserDto) {
-    return ({ post: { ...data, signup: Date.now() } })
+    return (data)
     // return this.authService.create(createAuthDto);
   }
 
   @Post('/signup')
   signup(@Body() data: CreateUserDto) {
-    return ({ post: { ...data, signup: Date.now() } })
+    return (data)
     // return this.authService.create(createAuthDto);
   }
 }
