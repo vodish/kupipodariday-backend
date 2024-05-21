@@ -42,5 +42,4 @@ export class UsersController {
   userFind(@Body() data: FindUserDto) {
     return({post: data});
   }
-
 }
