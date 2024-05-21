@@ -9,7 +9,8 @@ export class WishesController {
 
   @Post()
   create(@Body() createWishDto: CreateWishDto) {
-    return this.wishesService.create(createWishDto);
+    return({post: createWishDto})
+    // return this.wishesService.create(createWishDto);
   }
 
   @Get()
