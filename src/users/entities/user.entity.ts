@@ -1,5 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
 import { Length, IsUrl, IsEmail } from "class-validator";
+import { Wish } from "src/wishes/entities/wish.entity";
+import { Offer } from "src/offers/entities/offer.entity";
+import { Wishlistlist } from "src/wishlistlists/entities/wishlistlist.entity";
 
 @Entity()
 export class User {
@@ -37,9 +40,12 @@ export class User {
 
 
     // связи
-    wishes: any; // список подарков пользователя
+    @OneToMany(() => Wish, (wish) => wish.id)
+    wishes: Wish[]; // список подарков пользователя
 
-    offers: any; // список донатов пользователя
+    @OneToMany(() => Offer, (offer) => offer.id)
+    offers: Offer[]; // список донатов пользователя
 
-    wishlists: any; // список подборок подарков пользователя
+    @OneToMany(() => Wishlistlist, (wishlistlist) => wishlistlist.id)
+    wishlists: Wishlistlist[]; // список подборок подарков пользователя
 }

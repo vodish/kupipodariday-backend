@@ -7,28 +7,41 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @Get('/me')
+  me() {
+    return({get: '/users/me'});
+    // return this.usersService.findAll();
   }
-
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
-  }
-
-  @Patch(':id')
+  
+  @Patch('/me')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+    return({patch: '/users/me'});
+    // return this.usersService.update(+id, updateUserDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @Get('/me/wishes')
+  meWishes() {
+    return({get: '/users/me/wishes'});
+    // return this.usersService.findAll();
   }
+
+  @Get('/:id')
+  userName(@Param('id') id: string) {
+    return({get: `/users/me/${id}`});
+    // return this.usersService.findOne(+id);
+  }
+
+  @Get('/:id/wishes')
+  userNameWishes(@Param('id') id: string) {
+    return({get: `/users/me/${id}/wishes`});
+    // return this.usersService.findOne(+id);
+  }
+
+
+  @Post('/find')
+  userFind(@Body() createUserDto: CreateUserDto) {
+    return({post: `/users/find`});
+    // return this.usersService.create(createUserDto);
+  }
+
 }
