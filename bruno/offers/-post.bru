@@ -1,0 +1,19 @@
+meta {
+  name: /
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/offers
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "amount": 1,
+    "hidden": true,
+    "itemId": 1
+  }
+}
