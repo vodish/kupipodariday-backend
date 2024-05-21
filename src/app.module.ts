@@ -8,8 +8,15 @@ import { WishlistlistsModule } from './wishlistlists/wishlistlists.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
-  imports: [PostgresForRoot, UsersModule, WishesModule, OffersModule, WishlistlistsModule, AuthModule],
+  imports: [
+    PostgresForRoot,
+    UsersModule,
+    WishesModule,
+    OffersModule,
+    WishlistlistsModule,
+    AuthModule
+  ],
   controllers: [AppController],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }
