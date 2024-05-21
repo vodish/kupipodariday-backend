@@ -1,0 +1,22 @@
+meta {
+  name: /
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/wishlistlists
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Мой вишлист",
+    "image": "https://i.pravatar.cc/150?img=3",
+    "description2": "dfv",
+    "itemsId": [
+      1
+    ]
+  }
+}
