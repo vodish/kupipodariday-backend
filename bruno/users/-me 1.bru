@@ -6,6 +6,16 @@ meta {
 
 patch {
   url: {{base_url}}/users/me
-  body: none
+  body: json
   auth: none
+}
+
+body:json {
+  {
+    "username": "exampleuser",
+    "about": "exampleuser",
+    "avatar": "https://i.pravatar.cc/150?img=3",
+    "email": "user@yandex.ru",
+    "password": "somestrongpassword"
+  }
 }
