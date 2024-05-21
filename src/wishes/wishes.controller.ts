@@ -13,23 +13,39 @@ export class WishesController {
     // return this.wishesService.create(createWishDto);
   }
 
-  @Get()
-  findAll() {
-    return this.wishesService.findAll();
+  @Get('/last')
+  last() {
+    return({get: 'wishes/last'});
+    // return this.wishesService.findAll();
+  }
+
+  @Get('/top')
+  top() {
+    return({get: 'wishes/top'});
+    // return this.wishesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.wishesService.findOne(+id);
+  getId(@Param('id') id: number) {
+    return({get: `wishes/${+id}`});
+    // return this.wishesService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
-    return this.wishesService.update(+id, updateWishDto);
+  patchId(@Param('id') id: number, @Body() updateWishDto: UpdateWishDto) {
+    return({patch: `wishes/${+id}`, data: updateWishDto});
+    // return this.wishesService.update(+id, updateWishDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wishesService.remove(+id);
+  deleteId(@Param('id') id: number) {
+    return({delete: `wishes/${+id}`});
+    // return this.wishesService.remove(+id);
+  }
+
+  @Post(':id/copy')
+  postIdCopy(@Param('id') id: number) {
+    return({copy: `wishes/${+id}/copy`});
+    // return this.wishesService.remove(+id);
   }
 }
