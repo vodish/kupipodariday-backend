@@ -10,11 +10,11 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     PostgresForRoot,
+    AuthModule,
     UsersModule,
     WishesModule,
     OffersModule,
     WishlistlistsModule,
-    AuthModule
   ],
   controllers: [AppController],
   providers: [],
