@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Entity, ManyToOne, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { Length, IsUrl } from "class-validator";
+import { User } from "src/users/entities/user.entity";
 
 @Entity()
 export class Wishlistlist {
@@ -28,5 +29,8 @@ export class Wishlistlist {
 
 
     // связи
+    @ManyToOne(() => User, (user) => user.id)
+    user: User;
+
     items: any; // содержит набор ссылок на подарки
 }
