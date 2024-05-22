@@ -1,9 +1,49 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpStatus, ArgumentsHost } from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
 import { SigninUserDto } from './dto/signin.dto';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+
+
+
+
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: SigninUserDto) {
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
+  ) { }
+
+
+  async signUp(data: CreateUserDto) {
+    const check = await this.userRepository.findOne({
+      where: [
+        { email: data.email },
+        { username: data.username },
+      ]
+    })
+
+    if (check) {
+      // return response
+      //   .status(HttpStatus.BAD_REQUEST)
+      //   .json({
+      //     error: {
+      //       status: HttpStatus.BAD_REQUEST,
+      //       message: 'User already exists',
+      //     }
+      //   });
+
+      return 'User already exists';
+    }
+    
+    // return this.userRepository.insert(data);
+    return this.userRepository.save(data);
+  }
+
+
+  signIp(createAuthDto: SigninUserDto) {
     return 'This action adds a new auth';
   }
 

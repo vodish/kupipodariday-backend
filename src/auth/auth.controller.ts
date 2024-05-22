@@ -3,19 +3,18 @@ import { AuthService } from './auth.service';
 import { SigninUserDto } from './dto/signin.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 
+
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) { }
 
   @Post('/signin')
-  signin(@Body() data: SigninUserDto) {
-    return (data)
-    // return this.authService.create(createAuthDto);
+  signIn(@Body() data: SigninUserDto) {
+    return this.authService.signIp(data);
   }
 
   @Post('/signup')
-  signup(@Body() data: CreateUserDto) {
-    return (data)
-    // return this.authService.create(createAuthDto);
+  signUp(@Body() data: CreateUserDto) {
+    return this.authService.signUp(data);
   }
 }
