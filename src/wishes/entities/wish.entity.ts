@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { Length, IsUrl, IsDecimal, IsNumber } from "class-validator";
+import { User } from "src/users/entities/user.entity";
 
 @Entity()
 export class Wish {
@@ -34,7 +35,7 @@ export class Wish {
     @IsDecimal()
     price: number; //  стоимость подарка, с округлением до сотых, число.
 
-    @Column({ type: 'decimal' })
+    @Column({ type: 'decimal', default: 0 })
     @IsDecimal()
     raised: number; // сумма донатов
 
@@ -44,7 +45,8 @@ export class Wish {
 
 
     // связи
-    owner: any; // ссылка на пользователя, который добавил пожелание подарка
-    
+    @ManyToOne(() => User, (user) => user.id)
+    owner: User; // ссылка на пользователя, который добавил пожелание подарка
+
     offers: any; // массив ссылок на донаты от других пользователей
 }

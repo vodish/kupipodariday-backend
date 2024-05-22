@@ -1,4 +1,4 @@
-import { Injectable, HttpStatus, ArgumentsHost } from '@nestjs/common';
+import { Injectable, HttpStatus, ArgumentsHost, ConflictException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
@@ -34,8 +34,8 @@ export class AuthService {
       //       message: 'User already exists',
       //     }
       //   });
-
-      return 'User already exists';
+      throw new ConflictException('username already exist');
+      // return 'User already exists';
     }
     
     // return this.userRepository.insert(data);

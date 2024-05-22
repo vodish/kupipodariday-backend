@@ -40,10 +40,10 @@ export class User {
 
 
     // связи
-    @OneToMany(() => Wish, (wish) => wish.id)
+    @OneToMany(() => Wish, (wish) => wish.owner)
     wishes: Wish[]; // список подарков пользователя
 
-    @OneToMany(() => Offer, (offer) => offer.id)
+    @OneToMany(() => Offer, (offer) => offer.user)
     offers: Offer[]; // список донатов пользователя
 
     @OneToMany(() => Wishlistlist, (wishlistlist) => wishlistlist.id)

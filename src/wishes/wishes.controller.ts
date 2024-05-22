@@ -9,14 +9,14 @@ export class WishesController {
 
   @Post()
   create(@Body() createWishDto: CreateWishDto) {
-    return({post: createWishDto})
-    // return this.wishesService.create(createWishDto);
+    // return({post: createWishDto})
+    return this.wishesService.create(createWishDto);
   }
 
   @Get('/last')
   last() {
     return({get: 'wishes/last'});
-    // return this.wishesService.findAll();
+    // return this.wishesService.findAll(); 
   }
 
   @Get('/top')
