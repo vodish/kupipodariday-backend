@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
@@ -18,7 +18,7 @@ export class WishlistsService {
 
 
   async create(data: CreateWishlistDto) {
-    const user = this.userRepository.create({ id: 1 }) // создаю объект, но не добавляю в бд
+    const user = this.userRepository.create({ id: 1 })
 
     try {
       return await this.wishlistRepository.save({ ...data, user });
@@ -30,7 +30,11 @@ export class WishlistsService {
 
 
   findAll() {
-    return `This action returns all wishlists`;
+    return this.wishlistRepository.find({
+      where: {
+        user: this.userRepository.create({ id: 1 })
+      },
+    })
   }
 
   findOne(id: number) {

@@ -5,7 +5,7 @@ import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 
 @Controller('wishlists')
 export class WishlistsController {
-  constructor(private readonly wishlistsService: WishlistsService) {}
+  constructor(private readonly wishlistsService: WishlistsService) { }
 
   @Post()
   create(@Body() createWishlistDto: CreateWishlistDto) {
