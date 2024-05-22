@@ -4,10 +4,10 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { User } from './entities/user.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
-import { Wishlistlist } from 'src/wishlistlists/entities/wishlistlist.entity';
+import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Wish, Wishlistlist])],
+  imports: [TypeOrmModule.forFeature([User, Wish, Wishlist])],
   controllers: [UsersController],
   providers: [UsersService]
 })

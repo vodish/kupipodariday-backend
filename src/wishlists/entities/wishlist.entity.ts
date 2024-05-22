@@ -3,7 +3,7 @@ import { Length, IsUrl } from "class-validator";
 import { User } from "src/users/entities/user.entity";
 
 @Entity()
-export class Wishlistlist {
+export class Wishlist {
     @PrimaryGeneratedColumn()
     id: number;
 

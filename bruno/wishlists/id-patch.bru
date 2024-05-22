@@ -1,11 +1,11 @@
 meta {
-  name: /
+  name: /:id
   type: http
-  seq: 1
+  seq: 4
 }
 
-post {
-  url: {{base_url}}/wishlistlists
+patch {
+  url: {{base_url}}/wishlists/1
   body: json
   auth: none
 }
@@ -14,7 +14,7 @@ body:json {
   {
     "name": "Мой вишлист",
     "image": "https://i.pravatar.cc/150?img=3",
-    "description2": "dfv",
+    "description": "dfv",
     "itemsId": [
       1
     ]

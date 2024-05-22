@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
 import { WishesModule } from './wishes/wishes.module';
 import { OffersModule } from './offers/offers.module';
-import { WishlistlistsModule } from './wishlistlists/wishlistlists.module';
+import { WishlistsModule } from './wishlists/wishlists.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
@@ -14,7 +14,7 @@ import { AuthModule } from './auth/auth.module';
     UsersModule,
     WishesModule,
     OffersModule,
-    WishlistlistsModule,
+    WishlistsModule,
   ],
   // controllers: [AppController],
   providers: [],

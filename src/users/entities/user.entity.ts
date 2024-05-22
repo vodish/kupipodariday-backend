@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { Length, IsUrl, IsEmail } from "class-validator";
 import { Wish } from "src/wishes/entities/wish.entity";
 import { Offer } from "src/offers/entities/offer.entity";
-import { Wishlistlist } from "src/wishlistlists/entities/wishlistlist.entity";
+import { Wishlist } from "src/wishlists/entities/wishlist.entity";
 
 @Entity()
 export class User {
@@ -46,6 +46,6 @@ export class User {
     @OneToMany(() => Offer, (offer) => offer.user)
     offers: Offer[]; // список донатов пользователя
 
-    @OneToMany(() => Wishlistlist, (wishlistlist) => wishlistlist.user)
-    wishlistlists: Wishlistlist[]; // список подборок подарков пользователя
+    @OneToMany(() => Wishlist, (wishlist) => wishlist.user)
+    wishlists: Wishlist[]; // список подборок подарков пользователя
 }

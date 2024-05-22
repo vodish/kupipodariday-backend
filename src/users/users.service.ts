@@ -26,7 +26,7 @@ export class UsersService {
       relations: {
         wishes: true,
         offers: true,
-        wishlistlists: true,
+        wishlists: true,
       },
     });
 
