@@ -5,6 +5,8 @@ import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { Wishlist } from './entities/wishlist.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Wish } from 'src/wishes/entities/wish.entity';
+
 
 @Injectable()
 export class WishlistsService {
@@ -13,15 +15,24 @@ export class WishlistsService {
     private readonly wishlistRepository: Repository<Wishlist>,
 
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+
+    @InjectRepository(Wish)
+    private readonly wishRepository: Repository<Wish>
   ) { }
 
 
   async create(data: CreateWishlistDto) {
-    const user = this.userRepository.create({ id: 1 })
+    const user = this.userRepository.create({ id: data.owner })
+
+    const wishes = data.itemsId.reduce((wishes: Wish[], el) => {
+      wishes.push(this.wishRepository.create({ id: el }))
+      return wishes;
+    }, []);
+    
 
     try {
-      return await this.wishlistRepository.save({ ...data, user });
+      return await this.wishlistRepository.save({ ...data, user, wishes });
     }
     catch (err) {
       throw new ConflictException(err.message)
