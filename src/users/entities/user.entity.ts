@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
 import { Length, IsUrl, IsEmail } from "class-validator";
+import { Exclude } from "class-transformer";
 import { Wish } from "src/wishes/entities/wish.entity";
 import { Offer } from "src/offers/entities/offer.entity";
 import { Wishlist } from "src/wishlists/entities/wishlist.entity";
@@ -36,6 +37,7 @@ export class User {
     email: string;
 
     @Column({ type: 'varchar', length: 100, select: false })
+    @Exclude()
     password: string;
 
 

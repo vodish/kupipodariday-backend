@@ -6,13 +6,14 @@ import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { UsersModule } from 'src/users/users.module';
+import { JWT_SECRET } from 'src/config/app.config';
 
 @Module({
   imports: [
     UsersModule,
     PassportModule,
     JwtModule.register({
-      // secret: jwtConstants.secret,
+      secret: JWT_SECRET,
       signOptions: { expiresIn: '7d' },
     }),
     TypeOrmModule.forFeature([User])

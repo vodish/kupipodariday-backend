@@ -1,17 +1,16 @@
 import { Injectable, HttpStatus, ArgumentsHost, ConflictException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { SigninUserDto } from './dto/signin.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import * as bcrypt from "bcrypt";
+import { BCRIPT_SALT } from 'src/config/app.config';
 
 
 @Injectable()
 export class AuthService {
   constructor(
-    private configService: ConfigService,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>
   ) { }
@@ -24,12 +23,13 @@ export class AuthService {
         { username: data.username },
       ]
     })
-
+    
     if (check) {
       throw new ConflictException('username already exist');
     }
-
-    const newUser = {...data, password: await bcrypt.hash(data.password, this.configService.get('salt.bcrypt'))};
+    
+    
+    const newUser = {...data, password: await bcrypt.hash(data.password, BCRIPT_SALT)};
 
     return this.userRepository.save(newUser);
   }
