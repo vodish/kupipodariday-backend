@@ -35,7 +35,7 @@ export class User {
     @IsEmail()
     email: string;
 
-    @Column({ type: 'varchar', length: 32, })
+    @Column({ type: 'varchar', length: 100, select: false })
     password: string;
 
 

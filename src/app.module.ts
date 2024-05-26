@@ -1,5 +1,6 @@
-import PostgresForRoot from './postgres.config';
 import { Module } from '@nestjs/common';
+import { AppConfig } from './config/app.config';
+import { PostgresConfig } from './config/postgres.config';
 // import { AppController } from './app.controller';
 import { UsersModule } from './users/users.module';
 import { WishesModule } from './wishes/wishes.module';
@@ -9,14 +10,14 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
-    PostgresForRoot,
+    AppConfig,
+    PostgresConfig,
     AuthModule,
     UsersModule,
     WishesModule,
     OffersModule,
     WishlistsModule,
   ],
-  // controllers: [AppController],
   providers: [],
 })
 export class AppModule { }
