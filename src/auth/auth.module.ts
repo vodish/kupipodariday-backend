@@ -7,6 +7,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { UsersModule } from 'src/users/users.module';
 import { JWT_SECRET } from 'src/config/app.config';
+import { JwtStrategy } from './strategy/jwt.strategy';
+import { LocalStrategy } from './strategy/local.strategy';
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { JWT_SECRET } from 'src/config/app.config';
     }),
     TypeOrmModule.forFeature([User])
   ],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy, LocalStrategy],
   controllers: [AuthController],
 })
 export class AuthModule { }

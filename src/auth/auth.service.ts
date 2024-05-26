@@ -6,11 +6,14 @@ import { SigninUserDto } from './dto/signin.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import * as bcrypt from "bcrypt";
 import { BCRIPT_SALT } from 'src/config/app.config';
+import { JwtService } from '@nestjs/jwt';
 
 
 @Injectable()
 export class AuthService {
   constructor(
+    private jwtService: JwtService,
+
     @InjectRepository(User)
     private readonly userRepository: Repository<User>
   ) { }
@@ -23,20 +26,26 @@ export class AuthService {
         { username: data.username },
       ]
     })
-    
+
     if (check) {
       throw new ConflictException('username already exist');
     }
-    
-    
-    const newUser = {...data, password: await bcrypt.hash(data.password, BCRIPT_SALT)};
 
-    return this.userRepository.save(newUser);
+
+    const newUser = await this.userRepository.save({
+      ...data,
+      password: await bcrypt.hash(data.password, BCRIPT_SALT),
+    });
+
+    const jwtPayload = { usernane: newUser.username, sub: newUser.id };
+
+    return { access_token: this.jwtService.sign(jwtPayload) };
   }
 
 
   signIn(createAuthDto: SigninUserDto) {
     return 'This action adds a new auth';
   }
+  
 
 }

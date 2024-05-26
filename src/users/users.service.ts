@@ -12,12 +12,16 @@ export class UsersService {
   ) { }
 
 
-  findAll() {
-    return `This action returns all users`;
+  async findById(id: number) {
+    return await this.userRepository.findOneBy({id});
   }
 
-  async userName(username: string) {
+  async findByName(username: string) {
+    return await this.userRepository.findOneBy({username});
+  }
 
+
+  async userName(username: string) {
     const user = await this.userRepository.findOne({
       where: [
         { username },
