@@ -43,9 +43,10 @@ export class AuthService {
   }
 
 
-  signIn(createAuthDto: SigninUserDto) {
-    return 'This action adds a new auth';
-  }
-  
+  signIn(user: User) {
+    console.log('AuthService -- signIn()');
 
+    const payload = { usernane: user.username, sub: user.id };
+    return { access_token: this.jwtService.sign(payload) };
+  }
 }

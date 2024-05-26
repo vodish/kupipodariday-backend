@@ -11,6 +11,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(username: string, password: string): Promise<any> {
+
+    console.log('LocalStrategy -- validate()');
+    console.log({username, password});
+
     const user = await this.userService.findByName(username);
 
     if (!user) {
@@ -18,7 +22,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     }
 
     const matched = await bcrypt.compare(password, user.password);
-    
+
     if (!matched) {
       throw new UnauthorizedException('Пользователь не авторизован');
     }
