@@ -13,11 +13,30 @@ export class UsersService {
 
 
   async findById(id: number) {
-    return await this.userRepository.findOneBy({id});
+    return await this.userRepository.findOneBy({ id });
   }
 
-  async findByName(username: string) {
-    return await this.userRepository.findOneBy({username});
+  async findByName(username: string, addPassword: boolean = false) {
+    if (addPassword) {
+      // запрос через createQueryBuilder, чтобы отдал поле password,
+      // которое исключено из объекта пользователя по-умолчанию в описании entity
+      const userRaw = await this.userRepository
+          .createQueryBuilder()
+          .where('username = :username', {username})
+          .addSelect('password as User_password')
+          .getRawOne();
+      
+      // очистить поля от алисов typeorm
+      for (let key in userRaw) {
+        userRaw[key.replace(/\S+_/, '')] = userRaw[key];
+        delete userRaw[key];
+      }
+
+      // console.log('userRaw', userRaw);
+      return userRaw;
+    }
+
+    return await this.userRepository.findOneBy({ username });
   }
 
 

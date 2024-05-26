@@ -44,8 +44,6 @@ export class AuthService {
 
 
   signIn(user: User) {
-    console.log('AuthService -- signIn()');
-
     const payload = { usernane: user.username, sub: user.id };
     return { access_token: this.jwtService.sign(payload) };
   }
