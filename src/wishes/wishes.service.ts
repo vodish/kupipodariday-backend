@@ -1,5 +1,5 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
@@ -64,8 +64,8 @@ export class WishesService {
         offers: true,
       },
     });
-    
-    if ( !row ) {
+
+    if (!row) {
       throw new NotFoundException('Подарок не найден');
     }
 
@@ -89,57 +89,35 @@ export class WishesService {
 
   async remove(id: number, userId: number) {
     const row = await this.getOne(id);
-    
+
     if (row.owner.id !== userId) {
-      throw new Error('Это чужой подарок');
+      throw new BadRequestException('Это чужой подарок');
     }
 
     await this.wishRepository.delete({ id });
 
-    return {status: 'удален', ...row};
+    return { status: 'удален', ...row };
   }
 
 
-  async copyWish(wishId: number, userId: number) {
-    const originalWish = await this.wishRepository.findOneBy({ id: wishId });
+  async copy(wishId: number, userId: number) {
+    const wish = await this.getOne(wishId);
 
-    if (!originalWish) {
-      throw new Error('Данный подарок уже существует');
-    }
-    const user = await this.userRepository.findOneBy({ id: userId });
+    // if (wish.owner.id === userId) {
+    //   throw new BadRequestException('У вас уже есть этот подарок');
+    // }
 
-    if (!user) {
-      throw new Error('Такой пользователь не найден');
-    }
+    // обновить старый подарок
+    await this.wishRepository.save({ ...wish, copied: wish.copied + 1 });
 
-    const wishData: CreateWishDto = {
-      name: originalWish.name,
-      description: originalWish.description,
-      link: originalWish.link,
-      image: originalWish.image,
-      price: originalWish.price,
-    };
-
-    originalWish.copied += 1;
-
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      await queryRunner.manager.insert(Wish, {
-        ...wishData,
-        owner: user,
-      });
-      delete user.password;
-      await queryRunner.manager.save(originalWish);
-      await queryRunner.commitTransaction();
-      return {};
-    } catch (err) {
-      await queryRunner.rollbackTransaction();
-      return false;
-    } finally {
-      await queryRunner.release();
-    }
+    // добавить новый подарок
+    return await this.wishRepository.save({
+      name: wish.name,
+      link: wish.link,
+      image: wish.image,
+      price: wish.price,
+      description: wish.description,
+      owner: this.userRepository.create({ id: userId }),
+    });
   }
 }
