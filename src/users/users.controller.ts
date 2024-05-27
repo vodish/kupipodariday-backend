@@ -1,33 +1,29 @@
-import { Controller, Get, Post, Body, Patch, Param, UseInterceptors, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FindUserDto } from './dto/find-user.dto';
-// import { UserInterceptor } from 'src/interceptors/user-intercept';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 
 
-
-// @UseInterceptors(UserInterceptor)
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Get('/me')
-  getMe() {
-    return({get: '/users/me'});
-    // return this.usersService.findAll();
+  getMe(@Req() req) {
+    return req.user;
   }
-  
-  @Patch('/me')
-  patchMe(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return({patch: updateUserDto});
-    // return this.usersService.update(+id, updateUserDto);
+
+  @Patch('me')
+  update(@Req() req, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(req.user, updateUserDto);
   }
+
 
   @Get('/me/wishes')
   meWishes() {
-    return({get: '/users/me/wishes'});
+    return ({ get: '/users/me/wishes' });
     // return this.usersService.findAll();
   }
 
@@ -40,13 +36,13 @@ export class UsersController {
 
   @Get('/:id/wishes')
   userNameWishes(@Param('id') id: string) {
-    return({get: `/users/me/${id}/wishes`});
+    return ({ get: `/users/me/${id}/wishes` });
     // return this.usersService.findOne(+id);
   }
 
 
   @Post('/find')
   userFind(@Body() data: FindUserDto) {
-    return({post: data});
+    return ({ post: data });
   }
 }
