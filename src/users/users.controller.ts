@@ -30,6 +30,7 @@ export class UsersController {
     return this.wishesService.getByUsername(req.user.username);
   }
 
+
   @Get(':username')
   async findOne(@Param('username') username: string) {
     const user = await this.usersService.findByName(username);
@@ -40,6 +41,7 @@ export class UsersController {
 
     return user;
   }
+
 
   @Get(':username/wishes')
   async findUsersWishes(@Param('username') username: string) {
@@ -52,8 +54,9 @@ export class UsersController {
     return this.wishesService.getByUsername(username);
   }
 
-  // @Post('find')
-  // async findMany(@Body('query') query: string) {
-  //   return await this.usersService.findMany(query);
-  // }
+
+  @Post('/find')
+  async findMany(@Body('query') query: string) {
+    return await this.usersService.find(query);
+  }
 }

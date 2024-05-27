@@ -1,5 +1,5 @@
 import { NotFoundException, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -80,7 +80,19 @@ export class UsersService {
   }
 
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+
+  async find(query: string) {
+    const users = await this.userRepository.find({
+      where: [
+        { username: Like(`%${query}%`) },
+        { email: Like(`%${query}%`) },
+      ],
+    });
+
+    if (!users.length) {
+      throw new NotFoundException('Пользователь не найден');
+    }
+
+    return users;
   }
 }
