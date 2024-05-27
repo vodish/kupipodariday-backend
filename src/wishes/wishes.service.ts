@@ -1,5 +1,5 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
@@ -13,7 +13,9 @@ export class WishesService {
     private readonly wishRepository: Repository<Wish>,
 
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+
+    private dataSource: DataSource
   ) { }
 
 
@@ -28,8 +30,8 @@ export class WishesService {
     }
   }
 
-  getLast() {
-    return this.wishRepository.find({
+  async getLast() {
+    return await this.wishRepository.find({
       relations: {
         owner: true,
         offers: true,
@@ -41,21 +43,110 @@ export class WishesService {
     });
   }
 
-
-
-  findAll() {
-    return `This action returns all wishes`;
+  async getTop() {
+    return await this.wishRepository.find({
+      relations: {
+        owner: true,
+        offers: true,
+      },
+      order: {
+        copied: 'DESC',
+      },
+      take: 20,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} wish`;
+  async getOne(id: number) {
+    const row = await this.wishRepository.findOne({
+      where: { id },
+      relations: {
+        owner: true,
+        offers: true,
+      },
+    });
+    
+    if ( !row ) {
+      throw new NotFoundException('Подарок не найден');
+    }
+
+    return row;
   }
 
-  update(id: number, updateWishDto: UpdateWishDto) {
-    return `This action updates a #${id} wish`;
+
+  async update(id: number, userId: number, updateWishDto: UpdateWishDto) {
+    const newWish = await this.getOne(id);
+
+    if (!newWish) {
+      throw new Error('Подарок не найден');
+    }
+
+    if (newWish.owner.id !== userId) {
+      throw new BadRequestException('Это чужой подарок');
+    }
+
+    return this.wishRepository.save({
+      id,
+      ...updateWishDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} wish`;
+
+  async remove(id: number, userId: number) {
+    const candidate = await this.getOne(id);
+
+    if (!candidate) {
+      throw new Error('Такой пользователь не найден');
+    }
+
+    if (candidate.owner.id !== userId) {
+      throw new Error('Пользователь не предлагал данный подарок');
+    }
+
+    await this.wishRepository.delete({ id });
+
+    return {};
+  }
+
+  async copyWish(wishId: number, userId: number) {
+    const originalWish = await this.wishRepository.findOneBy({ id: wishId });
+
+    if (!originalWish) {
+      throw new Error('Данный подарок уже существует');
+    }
+    const user = await this.userRepository.findOneBy({ id: userId });
+
+    if (!user) {
+      throw new Error('Такой пользователь не найден');
+    }
+
+    const wishData: CreateWishDto = {
+      name: originalWish.name,
+      description: originalWish.description,
+      link: originalWish.link,
+      image: originalWish.image,
+      price: originalWish.price,
+    };
+
+    originalWish.copied += 1;
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      await queryRunner.manager.insert(Wish, {
+        ...wishData,
+        owner: user,
+      });
+      delete user.password;
+      await queryRunner.manager.save(originalWish);
+      await queryRunner.commitTransaction();
+      return {};
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      return false;
+    } finally {
+      await queryRunner.release();
+    }
   }
 }

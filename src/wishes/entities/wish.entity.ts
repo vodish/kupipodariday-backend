@@ -9,10 +9,10 @@ export class Wish {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @CreateDateColumn()
+    @CreateDateColumn({select: false})
     createdAt: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({select: false})
     updatedAt: Date;
 
 
@@ -52,7 +52,6 @@ export class Wish {
 
     @ManyToMany(() => Wishlist, (wishlist) => wishlist.wishes)
     wishlists: Wishlist[]; // список альбомов
-
 
     @OneToMany(() => Offer, (offer) => offer.item, {
         cascade: true,
