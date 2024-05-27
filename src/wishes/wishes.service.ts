@@ -102,11 +102,7 @@ export class WishesService {
 
   async copy(wishId: number, userId: number) {
     const wish = await this.getOne(wishId);
-
-    // if (wish.owner.id === userId) {
-    //   throw new BadRequestException('У вас уже есть этот подарок');
-    // }
-
+    
     // обновить старый подарок
     await this.wishRepository.save({ ...wish, copied: wish.copied + 1 });
 
