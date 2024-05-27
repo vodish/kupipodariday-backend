@@ -7,13 +7,12 @@ import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 @Controller('offers')
 export class OffersController {
-  constructor(private readonly offersService: OffersService) {}
+  constructor(private readonly offersService: OffersService) { }
 
   @Post()
   @Post()
-  create(@Req() req, @Body() createOfferDto: CreateOfferDto) {
-    const userId = req.user.id;
-    return this.offersService.create(createOfferDto, Number(userId));
+  create(@Req() req, @Body() data: CreateOfferDto) {
+    return this.offersService.create(req.user.id, data);
   }
 
   @Get()

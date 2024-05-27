@@ -1,71 +1,42 @@
 import { Injectable, ConflictException, NotFoundException, NotAcceptableException } from '@nestjs/common';
-import { CreateOfferDto } from './dto/create-offer.dto';
-import { UpdateOfferDto } from './dto/update-offer.dto';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateOfferDto } from './dto/create-offer.dto';
 import { Offer } from './entities/offer.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { User } from 'src/users/entities/user.entity';
-import { DataSource, Repository } from 'typeorm';
 
 
 @Injectable()
 export class OffersService {
   constructor(
-    private dataSource: DataSource,
     @InjectRepository(Offer)
     private offerRepository: Repository<Offer>,
+
     @InjectRepository(Wish)
     private wishRepository: Repository<Wish>,
+
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) { }
 
 
-  async create(createOfferDto: CreateOfferDto, userId: number) {
-    const { itemId, hidden, amount } = createOfferDto;
-    const user = await this.userRepository.findOneBy({ id: userId });
-    const wish = await this.wishRepository.findOne({
-      where: { id: itemId },
-      relations: ['owner'],
-    });
+  async create(userId: number, data: CreateOfferDto) {
+
+    const wish = await this.wishRepository.findOneBy({ id: data.itemId });
 
     if (!wish) {
-      throw new NotFoundException('Такого подарка не найдено');
+      throw new NotFoundException('Подарок не найден');
     }
 
-    if (wish.owner.id === user.id) {
-      throw new NotAcceptableException('Только владелец подарка может его удалять');
-    }
+    // добавить с счетчику всех донатов
+    const raised = wish.raised + data.amount;
 
-    const raised = wish.raised + amount;
-
-    if (raised > wish.price) {
-      throw new NotAcceptableException('Размер вклада слишком большой');
-    } else {
-      wish.raised = wish.raised + amount;
-    }
-
-
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      await queryRunner.manager.insert(Offer, {
-        amount,
-        hidden,
-        user,
-      });
-      delete user.password;
-      await queryRunner.manager.save(wish);
-      await queryRunner.commitTransaction();
-      return {};
-    } catch (err) {
-      await queryRunner.rollbackTransaction();
-      return false;
-    } finally {
-      await queryRunner.release();
-    }
+    const newOffer = this.offerRepository.save({
+      ...data,
+      item: wish,
+      user: this.userRepository.create({ id: userId }),
+    });
   }
 
 
@@ -77,7 +48,7 @@ export class OffersService {
   }
 
 
-  
+
   findOne(id: number) {
     return this.offerRepository.findOne({
       where: { id },
