@@ -1,7 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, CreateDateColumn, UpdateDateColumn, OneToMany } from "typeorm";
 import { Length, IsUrl, IsDecimal, IsNumber } from "class-validator";
 import { User } from "src/users/entities/user.entity";
 import { Wishlist } from "src/wishlists/entities/wishlist.entity";
+import { Offer } from "src/offers/entities/offer.entity";
 
 @Entity()
 export class Wish {
@@ -49,6 +50,12 @@ export class Wish {
     @ManyToOne(() => User, (user) => user.id)
     owner: User; // ссылка на пользователя, который добавил пожелание подарка
 
-    @ManyToMany(()=>Wishlist, (wishlist)=>wishlist.wishes)
+    @ManyToMany(() => Wishlist, (wishlist) => wishlist.wishes)
     wishlists: Wishlist[]; // список альбомов
+
+
+    @OneToMany(() => Offer, (offer) => offer.item, {
+        cascade: true,
+    })
+    offers: Offer[]; // список донатов
 }

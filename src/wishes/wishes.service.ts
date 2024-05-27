@@ -28,6 +28,20 @@ export class WishesService {
     }
   }
 
+  getLast() {
+    return this.wishRepository.find({
+      relations: {
+        owner: true,
+        offers: true,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+      take: 40,
+    });
+  }
+
+
 
   findAll() {
     return `This action returns all wishes`;

@@ -2,11 +2,12 @@ import { Controller, Get, Post, Body, Patch, Param, UseInterceptors, UseGuards }
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FindUserDto } from './dto/find-user.dto';
-import { UserInterceptor } from 'src/interceptors/user-intercept';
-import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+// import { UserInterceptor } from 'src/interceptors/user-intercept';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 
 
-@UseInterceptors(UserInterceptor)
+
+// @UseInterceptors(UserInterceptor)
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
