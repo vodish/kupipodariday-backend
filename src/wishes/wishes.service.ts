@@ -73,6 +73,26 @@ export class WishesService {
   }
 
 
+  async getByUsername(username: string) {
+    const list = await this.wishRepository.find({
+      where: { owner: this.userRepository.create({username}) },
+      order: {
+        createdAt: 'ASC',
+      },
+      relations: {
+        owner: true,
+        offers: true,
+      },
+    });
+
+    if (!list) {
+      throw new NotFoundException('Подароки не найдены');
+    }
+
+    return list;
+  }
+
+
   async update(id: number, userId: number, updateWishDto: UpdateWishDto) {
     const newWish = await this.getOne(id);
 
@@ -102,7 +122,7 @@ export class WishesService {
 
   async copy(wishId: number, userId: number) {
     const wish = await this.getOne(wishId);
-    
+
     // обновить старый подарок
     await this.wishRepository.save({ ...wish, copied: wish.copied + 1 });
 

@@ -41,6 +41,7 @@ export class UsersService {
       return userRaw;
     }
 
+    
     return await this.userRepository.findOneBy({ username });
   }
 

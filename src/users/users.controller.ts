@@ -1,14 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, UseGuards, Req } from '@nestjs/common';
+import { NotFoundException, Controller, Get, Post, Body, Patch, Param, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FindUserDto } from './dto/find-user.dto';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { WishesService } from 'src/wishes/wishes.service';
 
 
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly wishesService: WishesService
+  ) { }
 
   @Get('/me')
   getMe(@Req() req) {
@@ -21,28 +25,35 @@ export class UsersController {
   }
 
 
-  @Get('/me/wishes')
-  meWishes() {
-    return ({ get: '/users/me/wishes' });
-    // return this.usersService.findAll();
+  @Get('me/wishes')
+  async findMeWishes(@Req() req) {
+    return this.wishesService.getByUsername(req.user.username);
   }
 
-  @Get('/:name')
-  userName(@Param('name') name: string) {
+  @Get(':username')
+  async findOne(@Param('username') username: string) {
+    const user = await this.usersService.findByName(username);
 
-    return this.usersService.userName(name);// ({get: `/users/me/${id}`});
-    // return this.usersService.findOne(+id);
+    if (!user) {
+      throw new NotFoundException('Пользователь не найден');
+    }
+
+    return user;
   }
 
-  @Get('/:id/wishes')
-  userNameWishes(@Param('id') id: string) {
-    return ({ get: `/users/me/${id}/wishes` });
-    // return this.usersService.findOne(+id);
+  @Get(':username/wishes')
+  async findUsersWishes(@Param('username') username: string) {
+    const user = await this.usersService.findByName(username);
+
+    if (!user) {
+      throw new NotFoundException('Пользователь не найден');
+    }
+
+    return this.wishesService.getByUsername(username);
   }
 
-
-  @Post('/find')
-  userFind(@Body() data: FindUserDto) {
-    return ({ post: data });
-  }
+  // @Post('find')
+  // async findMany(@Body('query') query: string) {
+  //   return await this.usersService.findMany(query);
+  // }
 }
