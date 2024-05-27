@@ -76,10 +76,6 @@ export class WishesService {
   async update(id: number, userId: number, updateWishDto: UpdateWishDto) {
     const newWish = await this.getOne(id);
 
-    if (!newWish) {
-      throw new Error('Подарок не найден');
-    }
-
     if (newWish.owner.id !== userId) {
       throw new BadRequestException('Это чужой подарок');
     }
@@ -92,20 +88,17 @@ export class WishesService {
 
 
   async remove(id: number, userId: number) {
-    const candidate = await this.getOne(id);
-
-    if (!candidate) {
-      throw new Error('Такой пользователь не найден');
-    }
-
-    if (candidate.owner.id !== userId) {
-      throw new Error('Пользователь не предлагал данный подарок');
+    const row = await this.getOne(id);
+    
+    if (row.owner.id !== userId) {
+      throw new Error('Это чужой подарок');
     }
 
     await this.wishRepository.delete({ id });
 
-    return {};
+    return {status: 'удален', ...row};
   }
+
 
   async copyWish(wishId: number, userId: number) {
     const originalWish = await this.wishRepository.findOneBy({ id: wishId });
