@@ -17,7 +17,7 @@ export class UsersController {
 
   @Patch('me')
   update(@Req() req, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(req.user, updateUserDto);
+    return this.usersService.update(req.user.id, updateUserDto);
   }
 
 
