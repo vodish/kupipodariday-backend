@@ -16,7 +16,7 @@ export class Offer {
 
 
     // поля
-    @Column({ type: 'decimal' })
+    @Column({ type: 'decimal', default: 0 })
     @IsDecimal()
     amount: number; // сумма заявки, округляется до двух знаков после запятой
 

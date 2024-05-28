@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, NotFoundException, NotAcceptableException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateOfferDto } from './dto/create-offer.dto';
@@ -45,18 +45,25 @@ export class OffersService {
 
 
 
-  findAll() {
-    return this.offerRepository.find({
-      relations: ['items'],
+  async findAll() {
+    return await this.offerRepository.find({
+      order: {id: "DESC"},
+      take: 50,
+      relations: { user: true, item: true },
     });
   }
 
 
-
-  findOne(id: number) {
-    return this.offerRepository.findOne({
+  async findOne(id: number) {
+    const offer = await this.offerRepository.findOne({
       where: { id },
-      relations: { user: true },
+      relations: { user: true, item: true },
     });
+
+    if ( !offer ) {
+      throw new NotFoundException('Запись не найдена');
+    }
+
+    return offer;
   }
 }
