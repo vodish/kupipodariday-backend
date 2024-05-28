@@ -20,9 +20,9 @@ export class WishesController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() createWishDto: CreateWishDto) {
+  create(@Req() req, @Body() createWishDto: CreateWishDto) {
     // return({post: createWishDto})
-    return this.wishesService.create(createWishDto);
+    return this.wishesService.create(req.user.id, createWishDto);
   }
 
   @Get('/last')
@@ -60,6 +60,6 @@ export class WishesController {
   @UseGuards(JwtAuthGuard)
   @Post(':id/copy')
   copyWish(@Param('id') id: number, @Req() req) {
-    return this.wishesService.copy(id, req.user);
+    return this.wishesService.copy(id, req.user.id);
   }
 }

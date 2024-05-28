@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
@@ -8,7 +8,7 @@ import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
 import { WishesModule } from 'src/wishes/wishes.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Wish, Wishlist]), WishesModule],
+  imports: [TypeOrmModule.forFeature([User, Wish, Wishlist]), forwardRef(()=>WishesModule) ],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],

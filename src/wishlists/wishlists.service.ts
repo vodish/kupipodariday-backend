@@ -14,8 +14,6 @@ import { Wish } from 'src/wishes/entities/wish.entity';
 @Injectable()
 export class WishlistsService {
   constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
     @InjectRepository(Wishlist)
     private wishlistRepository: Repository<Wishlist>,
     @InjectRepository(Wish)
@@ -23,8 +21,6 @@ export class WishlistsService {
   ) {}
 
   async create(userId: number, data: CreateWishlistDto) {
-    const user = this.userRepository.create({ id: userId });
-
     const wishes = await this.wishRepository.find({
       where: {
         id: In(data.itemsId),
@@ -33,7 +29,7 @@ export class WishlistsService {
 
     const wishlist = await this.wishlistRepository.save({
       ...data,
-      user,
+      user: {id: userId},
       wishes,
     });
 
@@ -87,13 +83,11 @@ export class WishlistsService {
   }
 
   async remove(id: number, userId: number) {
-    const wishlist = await this.wishlistRepository.findOne({
-      where: {
-        id: id,
-        user: this.userRepository.create({ id: userId }),
-      },
+    const wishlist = await this.wishlistRepository.findOneBy({
+      id: id,
+      user: { id: userId },
     });
-
+    
     if (!wishlist) {
       throw new NotFoundException('Не найден альбом');
     }

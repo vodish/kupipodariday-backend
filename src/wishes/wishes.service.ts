@@ -1,9 +1,10 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
@@ -18,14 +19,13 @@ export class WishesService {
 
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+  ) { }
 
-    private dataSource: DataSource,
-  ) {}
-
-  async create(data: CreateWishDto) {
-    const owner = this.userRepository.create({ id: 1 });
-
-    const newWish = await this.wishRepository.save({ ...data, owner });
+  async create(userId: number, dto: CreateWishDto) {
+    const newWish = await this.wishRepository.save({
+      ...dto,
+      owner: { id: userId }
+    });
 
     return newWish;
   }
@@ -119,6 +119,16 @@ export class WishesService {
   async copy(wishId: number, userId: number) {
     const wish = await this.getOne(wishId);
 
+    const existWish = await this.wishRepository.findOneBy({
+      link: wish.link,
+      owner: { id: userId },
+    });
+
+
+    if (existWish) {
+      throw new ConflictException(`У вас уже есть этот подарок - [${existWish.name}]`);
+    }
+
     // обновить старый подарок
     await this.wishRepository.save({ ...wish, copied: wish.copied + 1 });
 
@@ -129,7 +139,7 @@ export class WishesService {
       image: wish.image,
       price: wish.price,
       description: wish.description,
-      owner: this.userRepository.create({ id: userId }),
+      owner: { id: userId },
     });
   }
 }
