@@ -19,12 +19,12 @@ export class WishesService {
 
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) { }
+  ) {}
 
   async create(userId: number, dto: CreateWishDto) {
     const newWish = await this.wishRepository.save({
       ...dto,
-      owner: { id: userId }
+      owner: { id: userId },
     });
 
     return newWish;
@@ -124,9 +124,10 @@ export class WishesService {
       owner: { id: userId },
     });
 
-
     if (existWish) {
-      throw new ConflictException(`У вас уже есть этот подарок - [${existWish.name}]`);
+      throw new ConflictException(
+        `У вас уже есть этот подарок - [${existWish.name}]`,
+      );
     }
 
     // обновить старый подарок

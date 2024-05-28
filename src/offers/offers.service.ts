@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { Offer } from './entities/offer.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
@@ -9,6 +9,8 @@ import { User } from 'src/users/entities/user.entity';
 @Injectable()
 export class OffersService {
   constructor(
+    private dataSource: DataSource,
+
     @InjectRepository(Offer)
     private offerRepository: Repository<Offer>,
 
@@ -26,18 +28,31 @@ export class OffersService {
       throw new NotFoundException('Подарок не найден');
     }
 
-    // добавить к счетчику всех донатов
-    await this.wishRepository.save({
-      ...wish,
-      raised: Number(wish.raised) + data.amount, // typeorm не умеет адекватно в decimal
-    });
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    // записать донат в список
-    return await this.offerRepository.save({
-      ...data,
-      item: wish,
-      user: this.userRepository.create({ id: userId }),
-    });
+    try {
+      // добавить к счетчику всех донатов
+      await queryRunner.manager.save(Wish, {
+        ...wish,
+        raised: Number(wish.raised) + data.amount, // typeorm не умеет адекватно в decimal
+      });
+
+      // записать донат в список
+      const offer = await queryRunner.manager.save(Offer, {
+        ...data,
+        item: wish,
+        user: this.userRepository.create({ id: userId }),
+      });
+
+      await queryRunner.commitTransaction();
+      return offer;
+    } catch (err) {
+      return await queryRunner.rollbackTransaction();
+    } finally {
+      return await queryRunner.release();
+    }
   }
 
   async findAll() {

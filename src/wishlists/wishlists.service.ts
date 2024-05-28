@@ -8,7 +8,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { Wishlist } from './entities/wishlist.entity';
-import { User } from 'src/users/entities/user.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
 
 @Injectable()
@@ -29,7 +28,7 @@ export class WishlistsService {
 
     const wishlist = await this.wishlistRepository.save({
       ...data,
-      user: {id: userId},
+      user: { id: userId },
       wishes,
     });
 
@@ -87,7 +86,7 @@ export class WishlistsService {
       id: id,
       user: { id: userId },
     });
-    
+
     if (!wishlist) {
       throw new NotFoundException('Не найден альбом');
     }

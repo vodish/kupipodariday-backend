@@ -1,4 +1,8 @@
-import { NotFoundException, Injectable, ConflictException } from '@nestjs/common';
+import {
+  NotFoundException,
+  Injectable,
+  ConflictException,
+} from '@nestjs/common';
 import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -11,7 +15,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) { }
+  ) {}
 
   async findById(id: number) {
     return await this.userRepository.findOneBy({ id });
@@ -59,18 +63,15 @@ export class UsersService {
 
   async update(userId: number, dto: UpdateUserDto) {
     const findUser = await this.userRepository.findOne({
-      where: [
-        { username: dto.username },
-        { email: dto.email },
-      ]
+      where: [{ username: dto.username }, { email: dto.email }],
     });
 
     if (findUser && findUser.id !== userId) {
       if (findUser.email === dto.email) {
-        throw new ConflictException('Такой [емеил] уже занят')
+        throw new ConflictException('Такой [емеил] уже занят');
       }
       if (findUser.username === dto.username) {
-        throw new ConflictException('Такой [username] уже занят')
+        throw new ConflictException('Такой [username] уже занят');
       }
     }
 
