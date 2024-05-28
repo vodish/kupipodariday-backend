@@ -1,5 +1,5 @@
-import { Injectable, ConflictException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
@@ -11,52 +11,96 @@ import { Wish } from 'src/wishes/entities/wish.entity';
 @Injectable()
 export class WishlistsService {
   constructor(
-    @InjectRepository(Wishlist)
-    private readonly wishlistRepository: Repository<Wishlist>,
-
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-
+    private userRepository: Repository<User>,
+    @InjectRepository(Wishlist)
+    private wishlistRepository: Repository<Wishlist>,
     @InjectRepository(Wish)
-    private readonly wishRepository: Repository<Wish>
+    private wishRepository: Repository<Wish>,
   ) { }
 
+  async create(userId: number, data: CreateWishlistDto) {
+    const user = this.userRepository.create({ id: userId });
 
-  async create(data: CreateWishlistDto) {
-    const user = this.userRepository.create({ id: data.owner })
-
-    const wishes = data.itemsId.reduce((wishes: Wish[], el) => {
-      wishes.push(this.wishRepository.create({ id: el }))
-      return wishes;
-    }, []);
-    
-
-    try {
-      return await this.wishlistRepository.save({ ...data, user, wishes });
-    }
-    catch (err) {
-      throw new ConflictException(err.message)
-    }
-  }
-
-
-  findAll() {
-    return this.wishlistRepository.find({
+    const wishes = await this.wishRepository.find({
       where: {
-        user: this.userRepository.create({ id: 1 })
+        id: In(data.itemsId)
       },
-    })
+    });
+
+    const wishlist = await this.wishlistRepository.save({
+      ...data,
+      user,
+      wishes
+    });
+
+    return wishlist;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} wishlist`;
+
+  async findAll() {
+    return await this.wishlistRepository.find({
+      relations: { user: true, wishes: true },
+      take: 50,
+    });
   }
 
-  update(id: number, updateWishlistDto: UpdateWishlistDto) {
-    return `This action updates a #${id} wishlist`;
+
+  async findOneById(id: number) {
+    const wishlist = await this.wishlistRepository.findOne({
+      where: { id },
+      relations: { user: true, wishes: true }
+    });
+
+    if (!wishlist) {
+      throw new NotFoundException('Не найден альбом');
+    }
+
+    return wishlist;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} wishlist`;
+
+  async update(id: number, dto: UpdateWishlistDto, userId: number) {
+    const wishlist = await this.findOneById(id);
+
+    if (!wishlist) {
+      throw new NotFoundException('Не найден альбом');
+    }
+
+    if (wishlist.user.id !== userId) {
+      throw new ForbiddenException('Чужой альбом');
+    }
+
+    const wishes = await this.wishRepository.find({
+      where: {
+        id: In(dto.itemsId)
+      },
+    });
+
+    return await this.wishlistRepository.save({
+      ...wishlist,
+      name: dto.name,
+      image: dto.image,
+      description: dto.description,
+      wishes: wishes,
+    });
+  }
+
+
+  async remove(id: number, userId: number) {
+    const wishlist = await this.wishlistRepository.findOne({
+      where: {
+        id: id,
+        user: this.userRepository.create({id: userId})
+      }
+    });
+
+    if (!wishlist) {
+      throw new NotFoundException('Не найден альбом');
+    }
+
+    await this.wishlistRepository.delete({ id });
+
+    return { status: 'удален', ...wishlist };
   }
 }

@@ -11,9 +11,6 @@ export class CreateWishlistDto {
     @IsUrl()
     image: string;
 
-    @IsNumber()
-    owner: number;
-
     @IsArray()
     itemsId: number[];
 }
