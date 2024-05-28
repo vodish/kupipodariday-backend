@@ -24,15 +24,19 @@ export class OffersService {
   async create(userId: number, data: CreateOfferDto) {
 
     const wish = await this.wishRepository.findOneBy({ id: data.itemId });
-
+    
     if (!wish) {
       throw new NotFoundException('Подарок не найден');
     }
 
-    // добавить с счетчику всех донатов
-    const raised = wish.raised + data.amount;
+    // добавить к счетчику всех донатов
+    await this.wishRepository.save({
+      ...wish,
+      raised: Number(wish.raised) + data.amount  // typeorm не умеет адекватно в decimal
+    });
 
-    const newOffer = this.offerRepository.save({
+    // записать донат в список
+    return await this.offerRepository.save({
       ...data,
       item: wish,
       user: this.userRepository.create({ id: userId }),

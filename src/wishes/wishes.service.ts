@@ -20,14 +20,11 @@ export class WishesService {
 
 
   async create(data: CreateWishDto) {
-    const owner = this.userRepository.create({ id: 1 }) // создаю объект, но не добавляю в бд
+    const owner = this.userRepository.create({ id: 1 });
 
-    try {
-      return await this.wishRepository.save({ ...data, owner });
-    }
-    catch (err) {
-      throw new ConflictException(err.message);
-    }
+    const newWish = await this.wishRepository.save({ ...data, owner });
+    
+    return newWish;
   }
 
   async getLast() {

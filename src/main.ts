@@ -1,10 +1,10 @@
+import 'dotenv';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
-import 'dotenv';
 
-const SERVER_HOST = 'localhost';
-const SERVER_PORT = 3000;
+const SERVER_HOST = process.env.SERVER_HOST || 'localhost';
+const SERVER_PORT = process.env.SERVER_PORT || 3000;
 const SERVER_SITE = `http://${SERVER_HOST}:${SERVER_PORT}`;
 
 
