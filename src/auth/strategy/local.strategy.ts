@@ -1,6 +1,10 @@
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 
@@ -23,7 +27,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     if (!matched) {
       throw new UnauthorizedException('Пользователь не авторизован');
     }
-    
+
     return user;
   }
 }

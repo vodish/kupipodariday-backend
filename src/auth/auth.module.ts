@@ -18,9 +18,9 @@ import { LocalStrategy } from './strategy/local.strategy';
       secret: JWT_SECRET,
       signOptions: { expiresIn: '7d' },
     }),
-    TypeOrmModule.forFeature([User])
+    TypeOrmModule.forFeature([User]),
   ],
   providers: [AuthService, JwtStrategy, LocalStrategy],
   controllers: [AuthController],
 })
-export class AuthModule { }
+export class AuthModule {}

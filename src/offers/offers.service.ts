@@ -6,7 +6,6 @@ import { Offer } from './entities/offer.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { User } from 'src/users/entities/user.entity';
 
-
 @Injectable()
 export class OffersService {
   constructor(
@@ -18,13 +17,11 @@ export class OffersService {
 
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) { }
-
+  ) {}
 
   async create(userId: number, data: CreateOfferDto) {
-
     const wish = await this.wishRepository.findOneBy({ id: data.itemId });
-    
+
     if (!wish) {
       throw new NotFoundException('Подарок не найден');
     }
@@ -32,7 +29,7 @@ export class OffersService {
     // добавить к счетчику всех донатов
     await this.wishRepository.save({
       ...wish,
-      raised: Number(wish.raised) + data.amount  // typeorm не умеет адекватно в decimal
+      raised: Number(wish.raised) + data.amount, // typeorm не умеет адекватно в decimal
     });
 
     // записать донат в список
@@ -43,16 +40,13 @@ export class OffersService {
     });
   }
 
-
-
   async findAll() {
     return await this.offerRepository.find({
-      order: {id: "DESC"},
+      order: { id: 'DESC' },
       take: 50,
       relations: { user: true, item: true },
     });
   }
-
 
   async findOne(id: number) {
     const offer = await this.offerRepository.findOne({
@@ -60,7 +54,7 @@ export class OffersService {
       relations: { user: true, item: true },
     });
 
-    if ( !offer ) {
+    if (!offer) {
       throw new NotFoundException('Запись не найдена');
     }
 

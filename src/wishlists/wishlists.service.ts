@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
@@ -6,7 +10,6 @@ import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { Wishlist } from './entities/wishlist.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
-
 
 @Injectable()
 export class WishlistsService {
@@ -17,26 +20,25 @@ export class WishlistsService {
     private wishlistRepository: Repository<Wishlist>,
     @InjectRepository(Wish)
     private wishRepository: Repository<Wish>,
-  ) { }
+  ) {}
 
   async create(userId: number, data: CreateWishlistDto) {
     const user = this.userRepository.create({ id: userId });
 
     const wishes = await this.wishRepository.find({
       where: {
-        id: In(data.itemsId)
+        id: In(data.itemsId),
       },
     });
 
     const wishlist = await this.wishlistRepository.save({
       ...data,
       user,
-      wishes
+      wishes,
     });
 
     return wishlist;
   }
-
 
   async findAll() {
     return await this.wishlistRepository.find({
@@ -45,11 +47,10 @@ export class WishlistsService {
     });
   }
 
-
   async findOneById(id: number) {
     const wishlist = await this.wishlistRepository.findOne({
       where: { id },
-      relations: { user: true, wishes: true }
+      relations: { user: true, wishes: true },
     });
 
     if (!wishlist) {
@@ -58,7 +59,6 @@ export class WishlistsService {
 
     return wishlist;
   }
-
 
   async update(id: number, dto: UpdateWishlistDto, userId: number) {
     const wishlist = await this.findOneById(id);
@@ -73,7 +73,7 @@ export class WishlistsService {
 
     const wishes = await this.wishRepository.find({
       where: {
-        id: In(dto.itemsId)
+        id: In(dto.itemsId),
       },
     });
 
@@ -86,13 +86,12 @@ export class WishlistsService {
     });
   }
 
-
   async remove(id: number, userId: number) {
     const wishlist = await this.wishlistRepository.findOne({
       where: {
         id: id,
-        user: this.userRepository.create({id: userId})
-      }
+        user: this.userRepository.create({ id: userId }),
+      },
     });
 
     if (!wishlist) {

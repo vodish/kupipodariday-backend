@@ -1,33 +1,38 @@
-import { Entity, ManyToOne, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
-import { Length, IsUrl, IsDecimal } from "class-validator";
-import { User } from "src/users/entities/user.entity";
-import { Wish } from "src/wishes/entities/wish.entity";
+import {
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { IsDecimal } from 'class-validator';
+import { User } from 'src/users/entities/user.entity';
+import { Wish } from 'src/wishes/entities/wish.entity';
 
 @Entity()
 export class Offer {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @UpdateDateColumn()
-    updatedAt: Date;
+  @UpdateDateColumn()
+  updatedAt: Date;
 
+  // поля
+  @Column({ type: 'decimal', default: 0 })
+  @IsDecimal()
+  amount: number; // сумма заявки, округляется до двух знаков после запятой
 
-    // поля
-    @Column({ type: 'decimal', default: 0 })
-    @IsDecimal()
-    amount: number; // сумма заявки, округляется до двух знаков после запятой
+  @Column({ type: 'boolean', default: false })
+  hidden: boolean;
 
-    @Column({ type: 'boolean', default: false })
-    hidden: boolean;
+  // связи
+  @ManyToOne(() => User, (user) => user.id)
+  user: User;
 
-
-    // связи
-    @ManyToOne(()=>User, (user) => user.id)
-    user: User;
-
-    @ManyToOne(()=>Wish, (wish) => wish.id)
-    item: Wish;
+  @ManyToOne(() => Wish, (wish) => wish.id)
+  item: Wish;
 }

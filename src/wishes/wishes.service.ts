@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateWishDto } from './dto/create-wish.dto';
@@ -15,15 +19,14 @@ export class WishesService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
 
-    private dataSource: DataSource
-  ) { }
-
+    private dataSource: DataSource,
+  ) {}
 
   async create(data: CreateWishDto) {
     const owner = this.userRepository.create({ id: 1 });
 
     const newWish = await this.wishRepository.save({ ...data, owner });
-    
+
     return newWish;
   }
 
@@ -69,10 +72,9 @@ export class WishesService {
     return row;
   }
 
-
   async getByUsername(username: string) {
     const list = await this.wishRepository.find({
-      where: { owner: this.userRepository.create({username}) },
+      where: { owner: this.userRepository.create({ username }) },
       order: {
         createdAt: 'ASC',
       },
@@ -89,7 +91,6 @@ export class WishesService {
     return list;
   }
 
-
   async update(id: number, userId: number, updateWishDto: UpdateWishDto) {
     const newWish = await this.getOne(id);
 
@@ -103,7 +104,6 @@ export class WishesService {
     });
   }
 
-
   async remove(id: number, userId: number) {
     const row = await this.getOne(id);
 
@@ -115,7 +115,6 @@ export class WishesService {
 
     return { status: 'удален', ...row };
   }
-
 
   async copy(wishId: number, userId: number) {
     const wish = await this.getOne(wishId);

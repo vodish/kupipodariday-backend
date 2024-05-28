@@ -1,4 +1,14 @@
-import { Controller, Req, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Req,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { WishlistsService } from './wishlists.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
@@ -7,7 +17,7 @@ import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 @Controller('/wishlistlists')
 export class WishlistsController {
-  constructor(private readonly wishlistsService: WishlistsService) { }
+  constructor(private readonly wishlistsService: WishlistsService) {}
 
   @Post()
   create(@Req() req, @Body() dto: CreateWishlistDto) {

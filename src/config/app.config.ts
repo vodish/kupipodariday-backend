@@ -7,11 +7,10 @@ export const envConfig = () => ({
   salt: {
     bcrypt: BCRIPT_SALT,
     jwt: JWT_SECRET,
-  }
+  },
 });
 
 export const AppConfig = ConfigModule.forRoot({
   load: [envConfig],
   isGlobal: true, // глобальный модуль, можно не импортировать в каждом модуле
-})
-
+});
