@@ -6,11 +6,11 @@ import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
 
 export const PostgresConfig = TypeOrmModule.forRoot({
   type: 'postgres',
-  host: process.env.PG_HOST || 'localhost',
-  port: parseInt(process.env.PG_PORT) || 5432,
-  username: process.env.PG_USER || 'student',
-  password: process.env.PG_PASSWORD || 'student',
-  database: process.env.PG_DB || 'kupipodariday',
+  host: process.env.POSTGRES_HOST || 'localhost',
+  port: parseInt(process.env.POSTGRES_PORT) || 5432,
+  username: process.env.POSTGRES_USER || 'student',
+  password: process.env.POSTGRES_PASSWORD || 'student',
+  database: process.env.POSTGRES_DB || 'kupipodariday',
   // entities: ['src/**/enities/*.entity.{ts,js}'],
   entities: [User, Wish, Wishlist, Offer],
   synchronize: true,
